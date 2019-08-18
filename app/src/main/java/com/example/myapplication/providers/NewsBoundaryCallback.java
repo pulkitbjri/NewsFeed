@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.paging.PagedList;
 import com.example.myapplication.Models.News;
 import com.example.myapplication.Models.NewsSearchResponse;
+import com.example.myapplication.Network.NewsClient;
 import com.example.myapplication.Network.NewsService;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -21,10 +22,9 @@ public class NewsBoundaryCallback extends PagedList.BoundaryCallback{
 
     private int lastRequestedPage = 1;
     private boolean isRequestInProgress = false;
-    private final int NETWORK_PAGE_SIZE = 50;
 
     public NewsBoundaryCallback(String query, NewsService service, NewsRepositoryLocal repositoryLocal){
-
+        super();
         this.query=query;
         this.newsService=service;
         this.newsRepositoryLocal=repositoryLocal;
@@ -49,18 +49,20 @@ public class NewsBoundaryCallback extends PagedList.BoundaryCallback{
         if (isRequestInProgress)
             return;
 
-        query = query + "in:name,description";
         isRequestInProgress = true;
 
-        retrofit2.Call<NewsSearchResponse> callback = newsService.searchNews(query, "");
+        retrofit2.Call<NewsSearchResponse> callback = getService();
         callback.enqueue(new Callback<NewsSearchResponse>() {
             @Override
             public void onResponse(retrofit2.Call<NewsSearchResponse> call, Response<NewsSearchResponse> response) {
 
                 if (response.isSuccessful()) {
-                    List<News> repos = response.body().getArticles();
-                    newsRepositoryLocal.insert(repos, () -> {
-                        lastRequestedPage++;
+                    lastRequestedPage++;
+                    List<News> news = response.body().getArticles();
+                    for (int i = 0; i < news.size() ; i++) {
+                        news.get(i).setType(newsRepositoryLocal.type);
+                    }
+                    newsRepositoryLocal.insert(news, () -> {
                         isRequestInProgress = false;
                     });
 
@@ -77,10 +79,20 @@ public class NewsBoundaryCallback extends PagedList.BoundaryCallback{
 
                 networkErrors.postValue(t.getMessage());
                 isRequestInProgress = false;
-                Log.d("HERE1", "hereabc");
-
             }
         });
+
+    }
+
+    private retrofit2.Call<NewsSearchResponse> getService(){
+        if (newsRepositoryLocal.type.equalsIgnoreCase("local_trending"))
+            return newsService.searchNews(NewsClient.APIKey,query, newsRepositoryLocal.countryID,lastRequestedPage);
+        else if (newsRepositoryLocal.type.equalsIgnoreCase("world_trending"))
+        {
+            return newsService.searchNewsAll(NewsClient.APIKey,query, "en",lastRequestedPage);
+        }
+        else
+            return newsService.everything(NewsClient.APIKey,query,lastRequestedPage);
 
     }
 }

@@ -1,5 +1,6 @@
 package com.example.myapplication.Adapters;
 
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -61,11 +62,12 @@ public class MainRVAdapter extends RecyclerView.Adapter<MainRVAdapter.BaseViewHo
 
     public class ViewHolder extends BaseViewHolder{
 
-        TextView name;
+        TextView name,all;
         RecyclerView rv;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
+            all=itemView.findViewById(R.id.all);
             name=itemView.findViewById(R.id.name);
             rv=itemView.findViewById(R.id.rv);
         }
@@ -79,12 +81,14 @@ public class MainRVAdapter extends RecyclerView.Adapter<MainRVAdapter.BaseViewHo
             rv.setLayoutManager(new LinearLayoutManager(rv.getContext(),RecyclerView.HORIZONTAL,false));
             rv.setAdapter(adapter);
             if (mainNewsModel.getType().equalsIgnoreCase("saved")){
+                all.setVisibility(View.GONE);
                 NewsDatabase.getDatabase(mainActivity).newsDao().getSavedNews().
                         observe(mainActivity, news -> {
                             if (news!=null && news.size()!=0)
                             {
                                 itemView.setVisibility(View.VISIBLE);
-                                mainNewsModel.getNewsList().getValue().clear();
+                                if (mainNewsModel.getNewsList().getValue()!=null)
+                                    mainNewsModel.getNewsList().getValue().clear();
                                 mainNewsModel.getNewsList().getValue().addAll(news);
                                 adapter.notifyDataSetChanged();
                             }
@@ -97,28 +101,38 @@ public class MainRVAdapter extends RecyclerView.Adapter<MainRVAdapter.BaseViewHo
             }
             else
             {
+                all.setVisibility(View.VISIBLE);
+
                 NewsDatabase.getDatabase(mainActivity).newsDao().newsByType(mainNewsModel.getType()).
                         observe(mainActivity, news -> {
                             if (news!=null)
                             {
+                                if (mainNewsModel.getNewsList().getValue()!=null)
+                                    mainNewsModel.getNewsList().getValue().clear();
                                 mainNewsModel.getNewsList().getValue().addAll(news);
                                 adapter.notifyDataSetChanged();
                             }
                         });
             }
+
+            all.setOnClickListener(view -> {
+                mainActivity.openListActivity(mainNewsModel);
+            });
         }
 
 
     }
     public class SourcesViewHolder extends BaseViewHolder{
 
-        TextView name;
+        TextView name,all;
         RecyclerView rv;
 
         public SourcesViewHolder(@NonNull View itemView) {
             super(itemView);
             name=itemView.findViewById(R.id.name);
+            all=itemView.findViewById(R.id.all);
             rv=itemView.findViewById(R.id.rv);
+            all.setVisibility(View.GONE);
         }
 
 
@@ -133,6 +147,8 @@ public class MainRVAdapter extends RecyclerView.Adapter<MainRVAdapter.BaseViewHo
                     observe(mainActivity, news -> {
                         if (news!=null)
                         {
+                            if (mainNewsModel.getSourceList().getValue()!=null)
+                                mainNewsModel.getSourceList().getValue().clear();
                             mainNewsModel.getSourceList().getValue().addAll(news);
                             adapter.notifyDataSetChanged();
                         }

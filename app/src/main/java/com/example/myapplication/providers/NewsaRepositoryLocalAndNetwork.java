@@ -5,13 +5,12 @@ import androidx.lifecycle.LiveData;
 import androidx.paging.DataSource;
 import androidx.paging.LivePagedListBuilder;
 import androidx.paging.PagedList;
+import com.example.myapplication.Models.News;
 import com.example.myapplication.Network.NewsService;
 import com.example.myapplication.Models.NewsSearchResult;
 
 //Repository class that works with local and remote data sources.
 public class NewsaRepositoryLocalAndNetwork {
-
-    private final int DATABASE_PAGE_SIZE = 20;
 
     private NewsService newsService;
     private NewsRepositoryLocal newsRepositoryLocal;
@@ -25,20 +24,21 @@ public class NewsaRepositoryLocalAndNetwork {
 
     public NewsSearchResult Search(String query) {
         // Get data from the local cache
-        DataSource.Factory dataSourceFactory = newsRepositoryLocal.reposByTitle(query);
+        DataSource.Factory<Integer, News> dataSourceFactory = newsRepositoryLocal.reposByTitle(query);
 
         NewsBoundaryCallback boundaryCallback = new NewsBoundaryCallback(query, newsService, newsRepositoryLocal);
 
         LiveData<String> networkErrors = boundaryCallback.getNetworkErrors();
 
-
+        PagedList.Config config=new PagedList.Config.Builder()
+                .setPageSize(10)
+                .setPrefetchDistance(3)
+                .setEnablePlaceholders(true)
+                .build();
         //returns LiveData
-        LiveData data = new LivePagedListBuilder(dataSourceFactory,
-                new PagedList.Config.Builder().setPageSize(20)
-                        .setPrefetchDistance(10)
-                        .setEnablePlaceholders(true)
-                        .build())
-                .setBoundaryCallback(boundaryCallback).build();
+        LiveData<PagedList<News>> data = new LivePagedListBuilder(dataSourceFactory, 200)
+                .setBoundaryCallback(boundaryCallback)
+                .build();
 
         return new NewsSearchResult(data, networkErrors);
     }

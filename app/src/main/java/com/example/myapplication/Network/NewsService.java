@@ -13,9 +13,14 @@ public interface NewsService {
 
 
     @GET("top-headlines")
-    Call<NewsSearchResponse> searchNews(@Query("q") String query,
+    Call<NewsSearchResponse> searchNews(@Query("apiKey") String api,@Query("q") String query,
+                                                    @Query("country") String country,@Query("page") int page);
+    @GET("top-headlines")
+    Call<NewsSearchResponse> searchNewsAll(@Query("apiKey") String api,@Query("q") String query,
+                                           @Query("language") String language ,@Query("page") int page);
 
-                                                    @Query("country") String country);
+    @GET("top-headlines")
+    Call<NewsSearchResponse> everything(@Query("apiKey") String api,@Query("q") String query, @Query("page") int page);
 
 
 

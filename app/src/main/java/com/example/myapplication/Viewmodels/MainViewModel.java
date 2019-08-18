@@ -35,6 +35,11 @@ public class MainViewModel extends AndroidViewModel {
     NewsService service;
     private Application application;
     private LocationUtil locationUtil;
+
+    public String getCountryID() {
+        return countryID;
+    }
+
     private String countryID="all";
     private String countryName="";
     MutableLiveData<ArrayList<MainNewsModel>> mainList= new MutableLiveData<>();

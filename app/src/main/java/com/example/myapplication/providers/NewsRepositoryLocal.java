@@ -12,12 +12,15 @@ import java.util.concurrent.Executor;
 //Class that handles the DAO local data source.
 public class NewsRepositoryLocal {
 
+    public String type;
     private NewsRepo newsRepo;
     private Executor executor;
-
-    public NewsRepositoryLocal(NewsRepo dao, Executor exe){
+    public String countryID;
+    public NewsRepositoryLocal(NewsRepo dao, Executor exe, String type, String countryID){
         this.newsRepo=dao;
         this.executor=exe;
+        this.type=type;
+        this.countryID=countryID;
     }
 
     public void insert(final List<News> repos, final InsertFinished finished){
@@ -32,7 +35,7 @@ public class NewsRepositoryLocal {
 
 
     public DataSource.Factory<Integer, News> reposByTitle(String query){
-        return newsRepo.reposByTitle("%" + query.replace(' ', '%') + "%");
+        return newsRepo.newsByTitle(type,"%" + query.replace(' ', '%') + "%");
     }
 
 

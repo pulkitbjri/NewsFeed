@@ -1,5 +1,7 @@
 package com.example.myapplication.Adapters;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +14,7 @@ import com.example.myapplication.Models.BaseNews;
 import com.example.myapplication.Models.News;
 import com.example.myapplication.Models.SavedNews;
 import com.example.myapplication.Models.Sources;
+import com.example.myapplication.NewsDetailsActivity;
 import com.example.myapplication.R;
 import com.example.myapplication.database.NewsDatabase;
 import com.facebook.shimmer.ShimmerFrameLayout;
@@ -83,6 +86,13 @@ public class MainInnerSourcesRVAdapter extends RecyclerView.Adapter<MainInnerSou
             Sources news= (Sources) list.get(getAdapterPosition());
             name.setText(news.getName());
 
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(news.getUrl()));
+                    itemView.getContext().startActivity(browserIntent);
+                }
+            });
         }
     }
 

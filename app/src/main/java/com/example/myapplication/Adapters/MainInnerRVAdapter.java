@@ -1,5 +1,7 @@
 package com.example.myapplication.Adapters;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +15,7 @@ import com.example.myapplication.Models.BaseNews;
 import com.example.myapplication.Models.MainNewsModel;
 import com.example.myapplication.Models.News;
 import com.example.myapplication.Models.SavedNews;
+import com.example.myapplication.NewsDetailsActivity;
 import com.example.myapplication.R;
 import com.example.myapplication.database.NewsDatabase;
 import com.facebook.shimmer.ShimmerFrameLayout;
@@ -95,7 +98,8 @@ public class MainInnerRVAdapter extends RecyclerView.Adapter<MainInnerRVAdapter.
         public void setData() {
             News news= (News) list.get(getAdapterPosition());
 
-            Picasso.get().load(news.getUrlToImage()).into(imageView);
+            if (news.getUrlToImage()!=null && !news.getUrlToImage().isEmpty())
+                Picasso.get().load(news.getUrlToImage()).into(imageView);
             name.setText(news.getTitle());
             source.setText(news.getSource().getName());
             if (news.getLiked())
@@ -105,7 +109,7 @@ public class MainInnerRVAdapter extends RecyclerView.Adapter<MainInnerRVAdapter.
 
             like.setOnClickListener(view -> {
 
-                SavedNews savedNews=new SavedNews(news.getId(),news.getType(),news.getAuthor(),news.getContent(),news.getDescription(),news.getPublishedAt(),
+                SavedNews savedNews=new SavedNews(news.getType(),news.getAuthor(),news.getContent(),news.getDescription(),news.getPublishedAt(),
                         news.getTitle(),news.getUrl(),news.getUrlToImage(),news.getSource());
                 news.setLiked(!news.getLiked());
 
@@ -123,6 +127,10 @@ public class MainInnerRVAdapter extends RecyclerView.Adapter<MainInnerRVAdapter.
                             notifyItemChanged(getAdapterPosition());
                         });
 
+            });
+            itemView.setOnClickListener(view -> {
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(news.getUrl()));
+                itemView.getContext().startActivity(browserIntent);
             });
         }
     }
@@ -147,7 +155,8 @@ public class MainInnerRVAdapter extends RecyclerView.Adapter<MainInnerRVAdapter.
         public void setData() {
             SavedNews news= (SavedNews) list.get(getAdapterPosition());
 
-            Picasso.get().load(news.getUrlToImage()).into(imageView);
+            if (news.getUrlToImage()!=null && !news.getUrlToImage().isEmpty())
+                Picasso.get().load(news.getUrlToImage()).into(imageView);
             name.setText(news.getTitle());
             source.setText(news.getSource().getName());
             like.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(),R.drawable.ic_liked));
@@ -165,6 +174,10 @@ public class MainInnerRVAdapter extends RecyclerView.Adapter<MainInnerRVAdapter.
                             notifyItemChanged(getAdapterPosition());
                         });
 
+            });
+            itemView.setOnClickListener(view -> {
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(news.getUrl()));
+                itemView.getContext().startActivity(browserIntent);
             });
         }
     }

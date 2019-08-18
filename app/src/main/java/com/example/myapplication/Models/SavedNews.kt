@@ -5,12 +5,10 @@ import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
+import org.jetbrains.annotations.NotNull
 
 @Entity
 data class SavedNews(
-
-    @PrimaryKey(autoGenerate = true)
-    var id: Int,
 
     var type: String?,
 
@@ -23,8 +21,10 @@ data class SavedNews(
     @SerializedName("publishedAt")
     var publishedAt: String?,
 
+    @NotNull
+    @PrimaryKey
     @SerializedName("title")
-    var title: String?,
+    var title: String,
     @SerializedName("url")
     var url: String?,
     @SerializedName("urlToImage")

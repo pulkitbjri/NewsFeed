@@ -1,10 +1,12 @@
 package com.example.myapplication.Models
 
+import android.os.Parcelable
 import androidx.lifecycle.MutableLiveData
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
+import java.io.Serializable
 
 data class MainNewsModel(
 
@@ -14,4 +16,4 @@ data class MainNewsModel(
     var sourceList: MutableLiveData<ArrayList<Sources>>?
 
 
-)
+) : Serializable

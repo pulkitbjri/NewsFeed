@@ -5,12 +5,11 @@ import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
+import org.jetbrains.annotations.NotNull
 
 @Entity
 open class News(
 
-    @PrimaryKey(autoGenerate = true)
-    var id: Int,
 
     var type: String?,
 
@@ -23,8 +22,10 @@ open class News(
     @SerializedName("publishedAt")
     var publishedAt: String?,
 
+    @NotNull
+    @PrimaryKey
     @SerializedName("title")
-    var title: String?,
+    var title: String,
     @SerializedName("url")
     var url: String?,
     @SerializedName("urlToImage")
@@ -36,4 +37,13 @@ open class News(
     var liked : Boolean =false
 
 
-):BaseNews()
+
+):BaseNews() {
+    override fun equals(other: Any?): Boolean {
+        return super.equals(other)
+    }
+
+    override fun hashCode(): Int {
+        return super.hashCode()
+    }
+}

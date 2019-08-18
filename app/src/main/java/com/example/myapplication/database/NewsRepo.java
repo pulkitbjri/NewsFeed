@@ -25,9 +25,10 @@ public interface NewsRepo {
     void unLike(SavedNews repos);
 
 
-    @Query("Select * from news where (title LIKE :queryString) OR (description LIKE" +
-            ":queryString) ")
-    DataSource.Factory<Integer, News> reposByTitle(String queryString);
+    @Query("Select * from news where ( (title LIKE :queryString) OR (description LIKE" +
+            ":queryString) ) and type = :type ")
+    DataSource.Factory<Integer, News> newsByTitle(String type,String queryString);
+
 
     @Query("Select * from news where type = :queryString ")
     LiveData<List<News>> newsByType(String queryString);
@@ -38,8 +39,17 @@ public interface NewsRepo {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertSources(List<Sources> repos);
 
-    @Query("Select * from savednews LIMIT 20")
+    @Query("Select * from savednews ")
     LiveData<List<SavedNews>> getSavedNews();
+
+
+    @Query("Select * from savednews where title LIKE :title  ")
+    LiveData<SavedNews> getSavedNewsbyTitle(String title);
+
+
+    @Query("Select * from news where title LIKE :title  ")
+    LiveData<News> getNewsbyTitle(String title);
+
 
     @Query("Select * from news ")
     LiveData<List<News>> repos();
