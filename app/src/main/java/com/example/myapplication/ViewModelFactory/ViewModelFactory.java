@@ -5,8 +5,8 @@ import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
 public class ViewModelFactory /*implements ViewModelProvider.Factory*/ {
-//    private GithubRepositoryLocalAndNetwork localAndNetwork;
-//    public ViewModelFactory(GithubRepositoryLocalAndNetwork repositoryLocalAndNetwork){
+//    private NewsaRepositoryLocalAndNetwork localAndNetwork;
+//    public ViewModelFactory(NewsaRepositoryLocalAndNetwork repositoryLocalAndNetwork){
 //        this.localAndNetwork=repositoryLocalAndNetwork;
 //    }
 //

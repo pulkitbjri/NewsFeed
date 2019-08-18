@@ -4,12 +4,19 @@ import android.Manifest;
 import android.annotation.TargetApi;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import com.example.myapplication.Viewmodels.LocationViewModel;
+import com.example.myapplication.Adapters.MainRVAdapter;
+import com.example.myapplication.Models.MainNewsModel;
+import com.example.myapplication.Viewmodels.MainViewModel;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -18,7 +25,10 @@ public class MainActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
 
-    LocationViewModel locationViewModel;
+    MainViewModel mainViewModel;
+
+    ArrayList<MainNewsModel> list=new ArrayList<>();
+    MainRVAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,13 +36,33 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         bindViews();
 
-        locationViewModel= ViewModelProviders.of(this).get(LocationViewModel.class);
+        mainViewModel = ViewModelProviders.of(this).get(MainViewModel.class);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             requestAndroidPermissions();
         }
 
+        setListners();
+        bindAdapter();
 
+
+//        mainViewModel.startObservingListData();
+    }
+
+    private void bindAdapter() {
+        adapter=new MainRVAdapter(list,this);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(adapter);
+    }
+
+    private void setListners() {
+        mainViewModel.getuIdata().observe(this, s -> {
+            Toast.makeText(this,s,Toast.LENGTH_SHORT).show();
+        });
+        mainViewModel.getMainList().observe(this, mainNewsModels -> {
+            list.addAll(mainNewsModels);
+            adapter.notifyDataSetChanged();
+        });
 
     }
 
@@ -48,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
             requestPermissions(permisstions,LOCATION);
             return;
         }
-        locationViewModel.requestCountry(true);
+        mainViewModel.requestCountry(true);
     }
 
     @Override
@@ -59,6 +89,7 @@ public class MainActivity extends AppCompatActivity {
         {
             if (grantResults[0]==RESULT_CANCELED)
             {
+                mainViewModel.requestCountry(false);
 
             }
         }

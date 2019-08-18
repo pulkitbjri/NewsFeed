@@ -4,11 +4,13 @@ package com.example.myapplication.Network;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class NewsClient {
 
     // 6b758068f9be4370a39cd30a4bb86f23
+    public static final String APIKey="6b758068f9be4370a39cd30a4bb86f23";
 
     public static final String LIVE_BASE_URL = "https://newsapi.org/v2/";
 
@@ -38,9 +40,13 @@ public class NewsClient {
             retrofit = new Retrofit.Builder()
                     .baseUrl(LIVE_BASE_URL)
                     .client(httpClient)
+                    .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();
         }
         return retrofit;
+    }
+    public static <S> S cteateService(Class<S> serviceClass) {
+        return retrofit.create(serviceClass);
     }
 }

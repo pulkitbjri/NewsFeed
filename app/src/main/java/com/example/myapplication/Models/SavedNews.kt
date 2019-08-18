@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 
 @Entity
-open class News(
+data class SavedNews(
 
     @PrimaryKey(autoGenerate = true)
     var id: Int,
@@ -31,9 +31,7 @@ open class News(
     var urlToImage: String?,
 
     @Embedded(prefix = "source_")
-    var source: Source,
-
-    var liked : Boolean =false
-
+    var source: Source
+    
 
 ):BaseNews()
