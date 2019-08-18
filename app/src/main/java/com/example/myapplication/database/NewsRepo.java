@@ -7,6 +7,7 @@ import androidx.paging.DataSource;
 import androidx.room.*;
 import com.example.myapplication.Models.News;
 import com.example.myapplication.Models.SavedNews;
+import com.example.myapplication.Models.Sources;
 
 import java.util.List;
 
@@ -29,8 +30,13 @@ public interface NewsRepo {
     DataSource.Factory<Integer, News> reposByTitle(String queryString);
 
     @Query("Select * from news where type = :queryString ")
-    LiveData<List<News>> reposByType(String queryString);
+    LiveData<List<News>> newsByType(String queryString);
 
+    @Query("Select * from sources where type = :queryString ")
+    LiveData<List<Sources>> sourcesByType(String queryString);
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insertSources(List<Sources> repos);
 
     @Query("Select * from savednews LIMIT 20")
     LiveData<List<SavedNews>> getSavedNews();
@@ -40,12 +46,22 @@ public interface NewsRepo {
 
     @Query("delete from news where type = :queryString ")
     void removeReposByType(String queryString);
+    @Query("delete from sources where type = :queryString ")
+    void removeSourcesByType(String queryString);
 
     @Transaction
     default void insertAndDeleteInTransaction(List<News> newProduct, String type) {
         // Anything inside this method runs in a single transaction.
         removeReposByType(type);
         insert(newProduct);
+
+    }
+
+    @Transaction
+    default void insertAndDeleteInTransactionSources(List<Sources> newProduct, String type) {
+        // Anything inside this method runs in a single transaction.
+        removeSourcesByType(type);
+        insertSources(newProduct);
 
     }
 

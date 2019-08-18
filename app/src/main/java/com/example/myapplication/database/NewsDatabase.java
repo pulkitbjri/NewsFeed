@@ -7,9 +7,10 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import com.example.myapplication.Models.News;
 import com.example.myapplication.Models.SavedNews;
+import com.example.myapplication.Models.Sources;
 
 @Database(
-        entities = {News.class, SavedNews.class},
+        entities = {News.class, SavedNews.class, Sources.class},
         version = 1,
         exportSchema = true
 )

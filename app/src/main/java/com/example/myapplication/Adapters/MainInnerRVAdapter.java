@@ -190,8 +190,6 @@ public class MainInnerRVAdapter extends RecyclerView.Adapter<MainInnerRVAdapter.
         public BaseViewHolder(@NonNull View itemView) {
             super(itemView);
         }
-        public void setData() {
-
-        }
+        abstract public void setData();
     }
 }

@@ -10,7 +10,8 @@ data class MainNewsModel(
 
     var title: String,
     var type: String,
-    var newsList: MutableLiveData<ArrayList<BaseNews>>
+    var newsList: MutableLiveData<ArrayList<BaseNews>> ?,
+    var sourceList: MutableLiveData<ArrayList<Sources>>?
 
 
 )

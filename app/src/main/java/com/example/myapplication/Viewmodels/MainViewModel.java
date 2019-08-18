@@ -8,10 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
-import com.example.myapplication.Models.BaseNews;
-import com.example.myapplication.Models.MainNewsModel;
-import com.example.myapplication.Models.News;
-import com.example.myapplication.Models.NewsSearchResponse;
+import com.example.myapplication.Models.*;
 import com.example.myapplication.Network.NewsClient;
 import com.example.myapplication.Network.NewsService;
 import com.example.myapplication.Utils.CountryUtil;
@@ -49,27 +46,31 @@ public class MainViewModel extends AndroidViewModel {
 
     {
         MainNewsModel mainViewModel1=new MainNewsModel("Trending Local News","local_trending"
-                    , new MutableLiveData<>());
+                    , new MutableLiveData<>(),null);
         MainNewsModel mainViewModel2=new MainNewsModel("Trending World News","world_trending"
-                , new MutableLiveData<>());
+                , new MutableLiveData<>(),null);
         MainNewsModel mainViewModel3=new MainNewsModel("Everything","everything"
-                , new MutableLiveData<>());
-        MainNewsModel mainViewModel4=new MainNewsModel("Sources","sources"
-                , new MutableLiveData<>());
-        MainNewsModel mainViewModel5=new MainNewsModel("Saved","saved"
-                , new MutableLiveData<>());
+                , new MutableLiveData<>(),null);
+        MainNewsModel mainViewModel4=new MainNewsModel("Local Sources","local_sources"
+                ,null, new MutableLiveData<>());
+        MainNewsModel mainViewModel5=new MainNewsModel("All Sources","sources"
+                ,null, new MutableLiveData<>());
+        MainNewsModel mainViewModel6=new MainNewsModel("Saved","saved"
+                , new MutableLiveData<>(),null);
 
         mainViewModel1.getNewsList().postValue(new ArrayList<BaseNews>());
         mainViewModel2.getNewsList().postValue(new ArrayList<BaseNews>());
         mainViewModel3.getNewsList().postValue(new ArrayList<BaseNews>());
-        mainViewModel4.getNewsList().postValue(new ArrayList<BaseNews>());
-        mainViewModel5.getNewsList().postValue(new ArrayList<BaseNews>());
+        mainViewModel4.getSourceList().postValue(new ArrayList<Sources>());
+        mainViewModel5.getSourceList().postValue(new ArrayList<Sources>());
+        mainViewModel6.getNewsList().postValue(new ArrayList<BaseNews>());
 
         typeList.add(mainViewModel1);
         typeList.add(mainViewModel2);
         typeList.add(mainViewModel3);
         typeList.add(mainViewModel4);
         typeList.add(mainViewModel5);
+        typeList.add(mainViewModel6);
 
     }
 
@@ -131,6 +132,10 @@ public class MainViewModel extends AndroidViewModel {
                     getDataDeomAPI(i,service.getEverything(countryName.toLowerCase(),NewsClient.APIKey));
                     break;
                 case "sources" :
+                    getSourcesDataDeomAPI(i,service.getAllSources(NewsClient.APIKey));
+                    break;
+                case "local_sources" :
+                    getSourcesDataDeomAPI(i,service.getLocalSources(countryID.toLowerCase(),NewsClient.APIKey));
                     break;
                 case "saved" :
                     break;
@@ -177,6 +182,44 @@ public class MainViewModel extends AndroidViewModel {
                 });
     }
 
+    private void getSourcesDataDeomAPI(int pos, Single<Response<SourceSearchResponse>> topHeadlines) {
+        topHeadlines.subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new SingleObserver<Response<SourceSearchResponse>>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onSuccess(Response<SourceSearchResponse> newsSearchResponseResponse) {
+                        Log.i(TAG, "onSuccess: ");
+                        List<Sources> newsList=newsSearchResponseResponse.body().getSources();
+
+                        for (int i = 0; i < newsList.size(); i++) {
+                            newsList.get(i).setType(typeList.get(pos).getType());
+                        }
+                        Observable.fromCallable(() -> {
+                            NewsDatabase.getDatabase(application).newsDao().insertAndDeleteInTransactionSources(newsSearchResponseResponse.body().getSources(),
+                                    typeList.get(pos).getType());
+
+                            return false;
+                        })
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe((result) -> {
+                                    Log.i(TAG, "onSuccess: "+ typeList.get(pos).getType());
+                                });
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+                });
+    }
+
+
     private void populateExternalRecyclerView() {
 
     }
@@ -186,12 +229,5 @@ public class MainViewModel extends AndroidViewModel {
         return uIdata;
     }
 
-//    public void startObservingListData() {
-//        for (int i = 0; i < typeList.size(); i++) {
-//            if (!typeList.get(i).getType().equals("sources")){
-//
-//            }
-//        }
-//    }
 }
 

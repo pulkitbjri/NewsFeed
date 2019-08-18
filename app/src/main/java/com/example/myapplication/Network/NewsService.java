@@ -2,6 +2,7 @@ package com.example.myapplication.Network;
 
 
 import com.example.myapplication.Models.NewsSearchResponse;
+import com.example.myapplication.Models.SourceSearchResponse;
 import io.reactivex.Single;
 import retrofit2.Call;
 import retrofit2.Response;
@@ -25,8 +26,8 @@ public interface NewsService {
     @GET("everything")
     Single<Response<NewsSearchResponse>> getEverything(@Query("q") String query, @Query("apiKey") String api);
     @GET("sources")
-    Single<Response<NewsSearchResponse>> getAllSources( @Query("apiKey") String api);
+    Single<Response<SourceSearchResponse>> getAllSources(@Query("apiKey") String api);
     @GET("sources")
-    Single<Response<NewsSearchResponse>> getLocalSources(@Query("country") String country, @Query("apiKey") String api);
+    Single<Response<SourceSearchResponse>> getLocalSources(@Query("country") String country, @Query("apiKey") String api);
 
 }

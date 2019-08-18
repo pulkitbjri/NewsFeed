@@ -31,6 +31,7 @@ data class SavedNews(
     var urlToImage: String?,
 
     @Embedded(prefix = "source_")
+    @SerializedName("source")
     var source: Source
     
 
